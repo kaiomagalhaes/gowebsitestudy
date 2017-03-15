@@ -8,12 +8,12 @@ import (
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	homeView.Render(w)
+	homeView.Render(w, nil)
 }
 
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	contactView.Render(w)
+	contactView.Render(w, nil)
 }
 
 var homeView *views.View
