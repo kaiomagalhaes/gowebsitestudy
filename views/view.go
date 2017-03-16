@@ -6,10 +6,14 @@ import (
 	"path/filepath"
 )
 
-var LayoutDir string = "views/layouts"
+var ViewsDir string = "views"
+var ViewsExt string = ".gohtml"
+var LayoutDir string = ViewsDir + "/layouts"
 
 func NewView(layout string, files ...string) *View {
-	files = append(files, LayoutFiles()...)
+	addViewsPrefix(files)
+	addViewsSufix(files)
+	files = append(files, layoutFiles()...)
 	t, err := template.ParseFiles(files...)
 	if err != err {
 		panic(err)
@@ -24,12 +28,29 @@ func NewView(layout string, files ...string) *View {
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
 	return v.Template.ExecuteTemplate(w, v.Layout, data)
 }
-func LayoutFiles() []string {
-	files, err := filepath.Glob(LayoutDir + "/*.gohtml")
+
+func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	v.Render(w, nil)
+}
+
+func layoutFiles() []string {
+	files, err := filepath.Glob(LayoutDir + "/*" + ViewsExt)
 	if err != nil {
 		panic(err)
 	}
 	return files
+}
+
+func addViewsPrefix(files []string) {
+	for i, f := range files {
+		files[i] = ViewsDir + "/" + f
+	}
+}
+
+func addViewsSufix(files []string) {
+	for i, f := range files {
+		files[i] = f + ViewsExt
+	}
 }
 
 type View struct {
